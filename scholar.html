@@ -1,0 +1,854 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102b46">
+  <title>Scholar Dashboard | ScholarTrack</title>
+
+  <!-- Supabase and existing authentication -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js" defer></script>
+
+  <style>
+    :root {
+      --navy: #102b46;
+      --blue: #1769e0;
+      --blue-light: #eaf2ff;
+      --bg: #f3f6fb;
+      --text: #17263c;
+      --muted: #68778c;
+      --border: #e3eaf3;
+      --white: #ffffff;
+      --green: #168253;
+      --amber: #966400;
+      --red: #b42332;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .app-header {
+      min-height: 88px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 4%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--blue);
+      color: white;
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .brand-name {
+      color: var(--blue);
+      font-size: 29px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .portal-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--blue-light);
+      color: var(--blue);
+      padding: 10px 17px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .portal-dot {
+      width: 9px;
+      height: 9px;
+      background: #20a36a;
+      border-radius: 50%;
+    }
+
+    .logout-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 13px 23px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      transition: background .2s;
+    }
+
+    .logout-btn:hover {
+      background: #1055bd;
+    }
+
+    .page-container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 38px 38px 20px;
+    }
+
+    .welcome-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin: 0 0 8px;
+    }
+
+    h1 {
+      font-size: 37px;
+      line-height: 1.3;
+      letter-spacing: -.8px;
+      margin: 0 0 9px;
+    }
+
+    .welcome-description {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .date-card {
+      min-width: 220px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 19px 24px;
+      box-shadow: 0 5px 20px #102b4608;
+    }
+
+    .date-label {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .date-value {
+      font-size: 18px;
+      font-weight: 750;
+    }
+
+    .notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: #fff8e8;
+      border: 1px solid #f1dfb4;
+      color: #795819;
+      padding: 17px 21px;
+      border-radius: 12px;
+      margin-bottom: 27px;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .notice-icon {
+      font-size: 23px;
+      line-height: 1.4;
+    }
+
+    .notice p {
+      margin: 3px 0 0;
+    }
+
+    .section-title {
+      font-size: 25px;
+      margin: 0 0 5px;
+      line-height: 1.4;
+    }
+
+    .section-description {
+      font-size: 16px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 22px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 5px 22px #102b4608;
+      min-width: 0;
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat-icon {
+      display: grid;
+      place-items: center;
+      width: 51px;
+      height: 51px;
+      border-radius: 14px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .icon-blue {
+      background: #eaf2ff;
+      color: #1769e0;
+    }
+
+    .icon-green {
+      background: #e4f7ed;
+      color: #168253;
+    }
+
+    .icon-amber {
+      background: #fff3d8;
+      color: #966400;
+    }
+
+    .icon-purple {
+      background: #f0eaff;
+      color: #7551c9;
+    }
+
+    .stat-caption {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-align: right;
+    }
+
+    .stat-value {
+      font-size: 35px;
+      font-weight: 800;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      margin-bottom: 7px;
+    }
+
+    .stat-name {
+      font-size: 17px;
+      font-weight: 750;
+      margin-bottom: 5px;
+    }
+
+    .stat-foot {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 29px;
+      margin-bottom: 27px;
+      box-shadow: 0 5px 22px #102b4608;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 23px;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 30px;
+      padding: 7px 13px;
+      font-size: 14px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .status-neutral {
+      background: #eef1f5;
+      color: #596579;
+    }
+
+    .status-pending {
+      background: #fff3d8;
+      color: #8a6000;
+    }
+
+    .status-verified,
+    .status-compliant {
+      background: #e2f7eb;
+      color: #167342;
+    }
+
+    .status-returned,
+    .status-deficient {
+      background: #ffe7e8;
+      color: #a12632;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+
+    th {
+      color: #64738a;
+      background: #f8faff;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .45px;
+      text-align: left;
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 20px 16px;
+      border-bottom: 1px solid #edf1f6;
+      font-size: 16px;
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 34px 20px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .empty-icon {
+      display: block;
+      font-size: 35px;
+      margin-bottom: 8px;
+    }
+
+    .program-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .program-card {
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fcfdff;
+    }
+
+    .program-heading {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 17px;
+    }
+
+    .program-symbol {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 13px;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 25px;
+    }
+
+    .program-card h3 {
+      font-size: 21px;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .program-card .program-type {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: 3px;
+    }
+
+    .requirements {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .requirements li {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 11px 0;
+      border-bottom: 1px solid #edf1f6;
+      font-size: 16px;
+    }
+
+    .requirements li:last-child {
+      border-bottom: none;
+    }
+
+    .requirement-value {
+      font-weight: 750;
+      text-align: right;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 15px;
+      padding: 20px 0 15px;
+    }
+
+    @media (max-width: 1100px) {
+      .page-container {
+        padding: 30px 24px 15px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 650px) {
+      body {
+        font-size: 16px;
+      }
+
+      .app-header {
+        padding: 15px 17px;
+        min-height: 75px;
+      }
+
+      .brand-logo {
+        width: 41px;
+        height: 41px;
+        font-size: 23px;
+      }
+
+      .brand-name {
+        font-size: 23px;
+      }
+
+      .brand-subtitle {
+        font-size: 13px;
+      }
+
+      .portal-label {
+        display: none;
+      }
+
+      .logout-btn {
+        padding: 11px 14px;
+        font-size: 15px;
+      }
+
+      .page-container {
+        padding: 25px 15px 10px;
+      }
+
+      h1 {
+        font-size: 29px;
+      }
+
+      .welcome-description {
+        font-size: 16px;
+      }
+
+      .date-card {
+        width: 100%;
+      }
+
+      .stats-grid,
+      .program-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .stat-card {
+        padding: 21px;
+      }
+
+      .stat-value {
+        font-size: 31px;
+      }
+
+      .panel {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        font-size: 22px;
+      }
+
+      .program-card {
+        padding: 19px;
+      }
+
+      .requirements li {
+        font-size: 15px;
+      }
+
+      .footer {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="app-header">
+    <div class="brand-area">
+      <div class="brand-logo">S</div>
+      <div>
+        <div class="brand-name">ScholarTrack</div>
+        <div class="brand-subtitle">Student Scholarship Portal</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="portal-label">
+        <span class="portal-dot"></span>
+        Scholar Account
+      </div>
+
+      <button
+        class="logout-btn"
+        id="logoutButton"
+        type="button"
+        onclick="scholarTrackLogout()">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="page-container">
+
+    <!-- Welcome -->
+    <section class="welcome-row">
+      <div>
+        <p class="eyebrow">STUDENT WORKSPACE</p>
+        <h1 id="welcomeTitle">Welcome to ScholarTrack</h1>
+        <p class="welcome-description">
+          Monitor your scholarship, academic performance, and compliance.
+        </p>
+      </div>
+
+      <div class="date-card">
+        <span class="date-label">TODAY'S DATE</span>
+        <div class="date-value" id="todayDate">Loading date...</div>
+      </div>
+    </section>
+
+    <!-- Demo data warning -->
+    <div class="notice">
+      <span class="notice-icon">ⓘ</span>
+      <div>
+        <strong>Dashboard preview</strong>
+        <p>
+          Your actual academic records have not been connected to this page yet.
+          The dashboard will display live records after database integration.
+          Scholarship requirement values shown below must match your official
+          examination instructions.
+        </p>
+      </div>
+    </div>
+
+    <!-- Summary cards -->
+    <section class="stats-grid" aria-label="Scholarship overview">
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-blue">♙</span>
+          <span class="stat-caption">PROGRAM</span>
+        </div>
+        <div class="stat-value" style="font-size:27px">Not assigned</div>
+        <div class="stat-name">My Scholarship</div>
+        <div class="stat-foot">
+          Your assigned scholarship program will appear here.
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-purple">▤</span>
+          <span class="stat-caption">ACADEMICS</span>
+        </div>
+        <div class="stat-value">—</div>
+        <div class="stat-name">Latest GWA</div>
+        <div class="stat-foot">
+          No semester record has been loaded yet.
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-amber">◷</span>
+          <span class="stat-caption">SUBMISSIONS</span>
+        </div>
+        <div class="stat-value" style="font-size:27px">No records</div>
+        <div class="stat-name">Submission Status</div>
+        <div class="stat-foot">
+          Your verification status will appear here.
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-green">✓</span>
+          <span class="stat-caption">COMPLIANCE</span>
+        </div>
+        <div class="stat-value" style="font-size:27px">Pending</div>
+        <div class="stat-name">Academic Compliance</div>
+        <div class="stat-foot">
+          Compliance appears after staff verification and evaluation.
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Submissions -->
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2 class="section-title">My Academic Submissions</h2>
+          <p class="section-description">
+            Track your semester grades and document verification.
+          </p>
+        </div>
+        <span class="status status-neutral">Student View</span>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ACADEMIC YEAR</th>
+              <th>SEMESTER</th>
+              <th>GWA</th>
+              <th>VERIFICATION</th>
+              <th>COMPLIANCE</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <span class="empty-icon">▤</span>
+                  <strong>No academic submissions yet</strong>
+                  <div>
+                    Your semester records will appear here after they are
+                    connected to the database.
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Scholarship requirements -->
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2 class="section-title">Scholarship Requirements</h2>
+          <p class="section-description">
+            Review the academic requirements for each program.
+          </p>
+        </div>
+      </div>
+
+      <div class="program-grid">
+
+        <article class="program-card">
+          <div class="program-heading">
+            <div class="program-symbol">★</div>
+            <div>
+              <h3>Excellence Scholar</h3>
+              <div class="program-type">Academic scholarship</div>
+            </div>
+          </div>
+
+          <ul class="requirements">
+            <li>
+              <span>Maximum GWA</span>
+              <span class="requirement-value">2.00</span>
+            </li>
+            <li>
+              <span>Minimum enrolled units</span>
+              <span class="requirement-value">18</span>
+            </li>
+            <li>
+              <span>Failed subjects allowed</span>
+              <span class="requirement-value">0</span>
+            </li>
+            <li>
+              <span>Incomplete subjects allowed</span>
+              <span class="requirement-value">0</span>
+            </li>
+            <li>
+              <span>Dropped subjects allowed</span>
+              <span class="requirement-value">0</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="program-card">
+          <div class="program-heading">
+            <div class="program-symbol">◆</div>
+            <div>
+              <h3>Access Scholar</h3>
+              <div class="program-type">Access scholarship</div>
+            </div>
+          </div>
+
+          <ul class="requirements">
+            <li>
+              <span>Maximum GWA</span>
+              <span class="requirement-value">2.50</span>
+            </li>
+            <li>
+              <span>Minimum enrolled units</span>
+              <span class="requirement-value">15</span>
+            </li>
+            <li>
+              <span>Failed subjects allowed</span>
+              <span class="requirement-value">0</span>
+            </li>
+            <li>
+              <span>Incomplete subjects allowed</span>
+              <span class="requirement-value">0</span>
+            </li>
+            <li>
+              <span>Dropped subjects allowed</span>
+              <span class="requirement-value">1</span>
+            </li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>ScholarTrack · Student Scholarship Monitoring System</span>
+      <span>Academic Year 2026–2027</span>
+    </footer>
+
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const dateElement = document.getElementById("todayDate");
+
+      dateElement.textContent = new Intl.DateTimeFormat("en-PH", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "Asia/Manila"
+      }).format(new Date());
+
+      // Keep the existing authentication guard.
+      if (typeof window.requireScholarTrackUser !== "function") {
+        console.error(
+          "Authentication helper not found. Check js/auth.js and js/config.js."
+        );
+        return;
+      }
+
+      try {
+        const account = await window.requireScholarTrackUser(["scholar"]);
+
+        if (!account) return;
+
+        const fullName = account.profile?.full_name || "Scholar";
+
+        document.getElementById("welcomeTitle").textContent =
+          "Welcome, " + fullName;
+      } catch (error) {
+        console.error("Could not load the scholar profile:", error);
+      }
+    });
+  </script>
+
+</body>
+</html>

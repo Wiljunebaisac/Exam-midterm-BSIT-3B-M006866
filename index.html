@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102b46">
+
+  <title>ScholarTrack | Scholarship Management</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Supabase connection -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+
+<body>
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <a class="brand" href="#" aria-label="ScholarTrack home">
+        <span class="brand-icon">S</span>
+        <span>
+          <strong>ScholarTrack</strong>
+          <small>Scholarship Portal</small>
+        </span>
+      </a>
+
+      <div class="nav-label">WORKSPACE</div>
+
+      <nav class="navigation" aria-label="Main navigation">
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">▦</span> Dashboard
+        </button>
+
+        <button class="nav-item" data-page="scholars">
+          <span class="nav-icon">♙</span> Scholars
+        </button>
+
+        <button class="nav-item" data-page="submissions">
+          <span class="nav-icon">▤</span> Grade Submissions
+        </button>
+
+        <button class="nav-item" data-page="verification">
+          <span class="nav-icon">✓</span> Verification
+        </button>
+
+        <button class="nav-item" data-page="compliance">
+          <span class="nav-icon">◎</span> Compliance
+        </button>
+
+        <button class="nav-item" data-page="renewals">
+          <span class="nav-icon">↻</span> Renewal Decisions
+        </button>
+
+        <button class="nav-item" data-page="history">
+          <span class="nav-icon">◷</span> Activity History
+        </button>
+      </nav>
+
+      <!-- SIDEBAR BOTTOM -->
+      <div class="sidebar-bottom">
+
+        <div class="help-card">
+          <div class="help-symbol">i</div>
+          <strong>Need assistance?</strong>
+          <p>Contact the Scholarship Office for help with your records.</p>
+        </div>
+
+        <div class="account-mini">
+          <div class="avatar" id="staffAvatar">ST</div>
+
+          <div class="account-info">
+            <strong id="staffName">Loading account...</strong>
+            <small id="staffRole">Staff Account</small>
+          </div>
+
+          <span class="online-dot"></span>
+        </div>
+
+        <!-- LOGOUT BUTTON -->
+        <button
+          type="button"
+          id="logoutButton"
+          onclick="scholarTrackLogout()"
+          style="
+            width: 100%;
+            margin-top: 12px;
+            padding: 11px 14px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+          "
+        >
+          ↪ &nbsp; Logout
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <div class="topbar-left">
+          <button
+            class="menu-button"
+            id="menuButton"
+            aria-label="Toggle navigation"
+          >☰</button>
+
+          <div>
+            <div class="breadcrumb">
+              Workspace / <span id="breadcrumb">Dashboard</span>
+            </div>
+
+            <h1 id="pageTitle">Dashboard Overview</h1>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+
+          <div class="semester-pill">
+            <span class="green-dot"></span>
+            Academic Year 2026–2027
+          </div>
+
+          <div class="top-avatar" id="topAvatar">ST</div>
+
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT -->
+      <section class="page-content">
+
+        <div class="welcome-row">
+
+          <div>
+            <p class="eyebrow">SCHOLARSHIP ADMINISTRATION</p>
+
+            <h2 id="welcomeTitle">Welcome to ScholarTrack</h2>
+
+            <p class="muted" id="welcomeText">
+              Monitor scholarship submissions and academic compliance in one place.
+            </p>
+          </div>
+
+          <div class="date-card">
+            <span class="date-label">TODAY</span>
+            <strong id="todayDate">Loading date...</strong>
+          </div>
+
+        </div>
+
+        <!-- DEMO NOTICE -->
+        <div class="demo-notice">
+          <span>ⓘ</span>
+
+          <div>
+            <strong>Design preview</strong>
+            <p>
+              These sample figures are for interface testing only.
+              Live records will appear after database integration.
+            </p>
+          </div>
+        </div>
+
+        <!-- STATISTICS -->
+        <section class="stats-grid" aria-label="Scholarship statistics">
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon blue">♙</span>
+              <span class="stat-caption">ALL RECORDS</span>
+            </div>
+
+            <div class="stat-value">24</div>
+            <div class="stat-name">Assigned Scholars</div>
+            <div class="stat-footer">
+              Across both scholarship programs
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon amber">◷</span>
+              <span class="stat-caption">ACTION REQUIRED</span>
+            </div>
+
+            <div class="stat-value">5</div>
+            <div class="stat-name">Pending Verification</div>
+            <div class="stat-footer">
+              Awaiting document review
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon green">✓</span>
+              <span class="stat-caption">POLICY CHECK</span>
+            </div>
+
+            <div class="stat-value">16</div>
+            <div class="stat-name">Compliant</div>
+            <div class="stat-footer">
+              Academic requirements satisfied
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon red">!</span>
+              <span class="stat-caption">FOR REVIEW</span>
+            </div>
+
+            <div class="stat-value">3</div>
+            <div class="stat-name">With Deficiency</div>
+            <div class="stat-footer">
+              Review recorded deficiency reasons
+            </div>
+          </article>
+
+        </section>
+
+        <!-- SUBMISSIONS TABLE -->
+        <section class="content-card">
+
+          <div class="section-heading">
+
+            <div>
+              <h3 id="tableTitle">Recent Grade Submissions</h3>
+              <p class="muted">
+                Review the latest sample records.
+              </p>
+            </div>
+
+            <div class="table-actions">
+
+              <label class="search-box">
+                <span>⌕</span>
+
+                <input
+                  id="searchInput"
+                  type="search"
+                  placeholder="Search student ID or name..."
+                  aria-label="Search submissions"
+                >
+              </label>
+
+              <select id="statusFilter" aria-label="Filter by status">
+                <option value="all">All statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Verified">Verified</option>
+                <option value="Returned">Returned</option>
+                <option value="Compliant">Compliant</option>
+                <option value="With Deficiency">With Deficiency</option>
+              </select>
+
+            </div>
+          </div>
+
+          <div class="table-wrap">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>STUDENT</th>
+                  <th>PROGRAM</th>
+                  <th>SEMESTER</th>
+                  <th>GWA</th>
+                  <th>SUBMISSION STATUS</th>
+                  <th>COMPLIANCE</th>
+                </tr>
+              </thead>
+
+              <tbody id="submissionTable">
+
+                <tr data-status="Verified" data-compliance="Compliant">
+                  <td>
+                    <div class="student-cell">
+                      <span class="student-avatar">B1</span>
+                      <span>
+                        <strong>B01</strong>
+                        <small>Demo Scholar 01</small>
+                      </span>
+                    </div>
+                  </td>
+
+                  <td>Excellence Scholar</td>
+                  <td>Semester 1</td>
+                  <td>2.00</td>
+                  <td><span class="status verified">Verified</span></td>
+                  <td><span class="status compliant">Compliant</span></td>
+                </tr>
+
+                <tr data-status="Verified" data-compliance="With Deficiency">
+                  <td>
+                    <div class="student-cell">
+                      <span class="student-avatar">B2</span>
+                      <span>
+                        <strong>B02</strong>
+                        <small>Demo Scholar 02</small>
+                      </span>
+                    </div>
+                  </td>
+
+                  <td>Excellence Scholar</td>
+                  <td>Semester 1</td>
+                  <td>2.01</td>
+                  <td><span class="status verified">Verified</span></td>
+                  <td><span class="status deficient">With Deficiency</span></td>
+                </tr>
+
+                <tr data-status="Pending" data-compliance="Not Evaluated">
+                  <td>
+                    <div class="student-cell">
+                      <span class="student-avatar">B6</span>
+                      <span>
+                        <strong>B06</strong>
+                        <small>Demo Scholar 06</small>
+                      </span>
+                    </div>
+                  </td>
+
+                  <td>Access Scholar</td>
+                  <td>Semester 1</td>
+                  <td>2.25</td>
+                  <td><span class="status pending">Pending</span></td>
+                  <td><span class="status neutral">Not Evaluated</span></td>
+                </tr>
+
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="table-footer">
+            <span id="resultCount">Showing 3 sample records</span>
+            <span class="footer-note">Sample data only</span>
+          </div>
+
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="page-footer">
+          <span>ScholarTrack · Scholarship Monitoring System</span>
+          <span>Academic Year 2026–2027</span>
+        </footer>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- STAFF AUTHENTICATION AND PAGE PROTECTION -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const nameElement = document.getElementById("staffName");
+      const roleElement = document.getElementById("staffRole");
+      const avatarElement = document.getElementById("staffAvatar");
+      const topAvatarElement = document.getElementById("topAvatar");
+      const logoutButton = document.getElementById("logoutButton");
+
+      // Prevent repeated logout clicks.
+      if (logoutButton) {
+        logoutButton.addEventListener("click", () => {
+          logoutButton.disabled = true;
+          logoutButton.textContent = "Logging out...";
+        });
+      }
+
+      // Require a valid signed-in Staff account.
+      if (typeof window.requireScholarTrackUser !== "function") {
+        console.error("Authentication helper was not loaded.");
+        window.location.replace("login.html");
+        return;
+      }
+
+      const account = await window.requireScholarTrackUser(["staff"]);
+
+      if (!account) return;
+
+      const fullName = account.profile.full_name || "Staff";
+      const initials = fullName
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join("") || "ST";
+
+      if (nameElement) {
+        nameElement.textContent = fullName;
+      }
+
+      if (roleElement) {
+        roleElement.textContent = "Staff Account";
+      }
+
+      if (avatarElement) {
+        avatarElement.textContent = initials;
+      }
+
+      if (topAvatarElement) {
+        topAvatarElement.textContent = initials;
+      }
+
+      const dateElement = document.getElementById("todayDate");
+
+      if (dateElement) {
+        dateElement.textContent = new Intl.DateTimeFormat("en-PH", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          timeZone: "Asia/Manila"
+        }).format(new Date());
+      }
+
+      const welcomeTitle = document.getElementById("welcomeTitle");
+
+      if (welcomeTitle) {
+        welcomeTitle.textContent = "Welcome, " + fullName;
+      }
+    });
+  </script>
+
+</body>
+</html>
